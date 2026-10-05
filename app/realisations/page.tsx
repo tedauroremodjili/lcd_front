@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import ProjectFilters from "@/components/projects/ProjectFilters";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
-import { getProjects } from "@/lib/api";
+import { getProjects, getPageBanners } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Nos réalisations",
@@ -11,18 +11,19 @@ export const metadata: Metadata = {
 };
 
 export default async function RealisationsPage() {
+  const banners = await getPageBanners();
   const projects = await getProjects();
 
   return (
     <>
       <PageHero
-        eyebrow="Portfolio"
-        title="Nos réalisations"
-        description="Découvrez nos chantiers en images, classés par domaine d'activité."
+        eyebrow={banners.realisations?.eyebrow ?? ""}
+        title={banners.realisations?.title ?? ""}
+        description={banners.realisations?.description ?? ""}
         breadcrumb={[{ label: "Accueil", href: "/" }, { label: "Réalisations" }]}
-        image="hero-realisations"
+        image={banners.realisations?.image ?? ""}
       />
-      <section className="bg-white py-20 sm:py-24">
+      <section className="bg-surface py-20 sm:py-24">
         <Container>
           <ProjectFilters projects={projects} />
         </Container>

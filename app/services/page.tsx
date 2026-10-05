@@ -1,8 +1,10 @@
+import Tilt from "@/components/ui/Tilt";
+import Reveal from "@/components/ui/Reveal";
 import type { Metadata } from "next";
 import ServiceCard from "@/components/services/ServiceCard";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
-import { getServices } from "@/lib/api";
+import { getServices, getPageBanners } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Nos services",
@@ -11,22 +13,27 @@ export const metadata: Metadata = {
 };
 
 export default async function ServicesPage() {
+  const banners = await getPageBanners();
   const services = await getServices();
 
   return (
     <>
       <PageHero
-        eyebrow="Ce que nous faisons"
-        title="Nos services"
-        description="Cinq métiers complémentaires pour accompagner vos projets du sourcing des matériaux à la pose finale."
+        eyebrow={banners.services?.eyebrow ?? ""}
+        title={banners.services?.title ?? ""}
+        description={banners.services?.description ?? ""}
         breadcrumb={[{ label: "Accueil", href: "/" }, { label: "Services" }]}
-        image="hero-services"
+        image={banners.services?.image ?? ""}
       />
-      <section className="bg-white py-20 sm:py-28">
+      <section className="bg-surface py-20 sm:py-28">
         <Container>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => (
-              <ServiceCard key={service.id} service={service} />
+            {services.map((service, i) => (
+              <Reveal key={service.id} delay={(i % 3) * 110} className="h-full">
+                <Tilt className="h-full">
+                  <ServiceCard service={service} />
+                </Tilt>
+              </Reveal>
             ))}
           </div>
         </Container>

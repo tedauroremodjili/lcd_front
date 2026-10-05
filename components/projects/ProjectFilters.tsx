@@ -2,6 +2,9 @@
 
 import { useMemo, useState } from "react";
 import ProjectCard from "@/components/projects/ProjectCard";
+import Reveal from "@/components/ui/Reveal";
+import ScrollRow from "@/components/ui/ScrollRow";
+import Tilt from "@/components/ui/Tilt";
 import type { Project, ServiceSlug } from "@/lib/types";
 import { serviceLabels } from "@/lib/utils";
 
@@ -17,9 +20,11 @@ const filterOrder: (ServiceSlug | "tous")[] = [
 export default function ProjectFilters({
   projects,
   className = "",
+  layout = "grid",
 }: {
   projects: Project[];
   className?: string;
+  layout?: "grid" | "scroll";
 }) {
   const [active, setActive] = useState<ServiceSlug | "tous">("tous");
 
@@ -41,7 +46,7 @@ export default function ProjectFilters({
             className={`whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
               active === filter
                 ? "bg-navy text-white"
-                : "bg-white text-navy hover:bg-navy/10"
+                : "bg-surface text-heading hover:bg-navy/10"
             }`}
           >
             {filter === "tous" ? "Tous" : serviceLabels[filter]}
@@ -50,13 +55,32 @@ export default function ProjectFilters({
       </div>
 
       {filtered.length === 0 ? (
-        <p className="mt-10 text-center text-sm text-charcoal/60">
+        <p className="mt-10 text-center text-sm text-body/60">
           Aucune réalisation dans cette catégorie pour le moment.
         </p>
+      ) : layout === "scroll" ? (
+        <Reveal className="mt-10" delay={120}>
+          <ScrollRow>
+            {filtered.map((project) => (
+              <div
+                key={project.id}
+                className="w-[82%] shrink-0 snap-start sm:w-[46%] lg:w-[31%]"
+              >
+                <Tilt className="h-full">
+                  <ProjectCard project={project} />
+                </Tilt>
+              </div>
+            ))}
+          </ScrollRow>
+        </Reveal>
       ) : (
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+          {filtered.map((project, i) => (
+            <Reveal key={project.id} delay={(i % 3) * 110} className="h-full">
+              <Tilt className="h-full">
+                <ProjectCard project={project} />
+              </Tilt>
+            </Reveal>
           ))}
         </div>
       )}

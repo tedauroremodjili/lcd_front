@@ -15,8 +15,8 @@ const serviceOptions: { value: QuoteServiceOption; label: string }[] = [
 ];
 
 const inputClasses =
-  "w-full rounded-lg border border-navy/15 bg-white px-4 py-3 text-sm text-navy placeholder:text-charcoal/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30";
-const labelClasses = "mb-2 block text-sm font-semibold text-navy";
+  "w-full rounded-lg border border-subtle/15 bg-surface px-4 py-3 text-sm text-heading placeholder:text-body/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30";
+const labelClasses = "mb-2 block text-sm font-semibold text-heading";
 
 export default function QuoteForm({
   defaultService,
@@ -26,25 +26,32 @@ export default function QuoteForm({
   defaultDescription?: string;
 }) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("submitting");
+    setError(null);
 
     const form = new FormData(e.currentTarget);
-    await submitQuoteRequest({
-      full_name: String(form.get("full_name") ?? ""),
-      phone: String(form.get("phone") ?? ""),
-      email: (form.get("email") as string) || undefined,
-      company: (form.get("company") as string) || undefined,
-      service: form.get("service") as QuoteServiceOption,
-      project_type: (form.get("project_type") as string) || undefined,
-      description: String(form.get("description") ?? ""),
-      budget: (form.get("budget") as string) || undefined,
-      desired_date: (form.get("desired_date") as string) || undefined,
-    });
-
-    setStatus("success");
+    try {
+      await submitQuoteRequest({
+        full_name: String(form.get("full_name") ?? ""),
+        phone: String(form.get("phone") ?? ""),
+        email: (form.get("email") as string) || undefined,
+        company: (form.get("company") as string) || undefined,
+        service: form.get("service") as QuoteServiceOption,
+        project_type: (form.get("project_type") as string) || undefined,
+        description: String(form.get("description") ?? ""),
+        budget: (form.get("budget") as string) || undefined,
+        desired_date: (form.get("desired_date") as string) || undefined,
+        attachments: form.getAll("attachments") as File[],
+      });
+      setStatus("success");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Une erreur est survenue.");
+      setStatus("idle");
+    }
   }
 
   if (status === "success") {
@@ -55,10 +62,10 @@ export default function QuoteForm({
             <path d="M4 10l4 4 8-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        <h3 className="font-serif-display text-xl font-bold text-navy">
+        <h3 className="font-serif-display text-xl font-bold text-heading">
           Demande envoyée
         </h3>
-        <p className="mt-2 text-sm text-charcoal/70">
+        <p className="mt-2 text-sm text-body/70">
           Votre demande de devis a bien été enregistrée. Notre équipe vous contactera
           prochainement.
         </p>
@@ -159,11 +166,16 @@ export default function QuoteForm({
           type="file"
           multiple
           accept="image/png,image/jpeg,image/webp,application/pdf"
-          className="w-full rounded-lg border border-dashed border-navy/25 bg-offwhite px-4 py-6 text-sm text-charcoal/60 file:mr-4 file:rounded-full file:border-0 file:bg-navy file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white"
+          className="w-full rounded-lg border border-dashed border-subtle/25 bg-surface-alt px-4 py-6 text-sm text-body/60 file:mr-4 file:rounded-full file:border-0 file:bg-navy file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white"
         />
       </div>
 
       <div className="sm:col-span-2">
+        {error && (
+          <p role="alert" className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </p>
+        )}
         <Button type="submit" variant="primary" className="w-full" disabled={status === "submitting"}>
           {status === "submitting" ? "Envoi en cours..." : "Envoyer ma demande"}
         </Button>

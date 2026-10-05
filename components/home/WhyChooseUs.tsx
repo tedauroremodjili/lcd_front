@@ -1,6 +1,8 @@
 import Container from "@/components/ui/Container";
+import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { whyChooseUs } from "@/lib/data";
+import { getTexts } from "@/lib/api";
+import { pairsOf, txt } from "@/lib/texts";
 
 const icons = [
   <path key="1" d="M4 12l6 6L20 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />,
@@ -9,19 +11,26 @@ const icons = [
   <path key="4" d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" />,
 ];
 
-export default function WhyChooseUs() {
+export default async function WhyChooseUs() {
+  const texts = await getTexts();
+  const items = pairsOf(texts, "why.items");
   return (
     <section className="bg-navy py-20 text-white sm:py-28">
       <Container>
         <SectionHeading
-          eyebrow="Notre différence"
-          title="Pourquoi nous choisir ?"
-          description="Une entreprise multi-services pensée pour simplifier vos projets, de l'idée à la réalisation."
+          eyebrow={txt(texts, "why.eyebrow")}
+          title={txt(texts, "why.title")}
+          description={txt(texts, "why.description")}
           light
         />
         <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {whyChooseUs.map((item, i) => (
-            <div key={item.title} className="rounded-2xl bg-white/5 p-7">
+          {items.map((item, i) => (
+            <Reveal
+              key={item.title}
+              delay={i * 110}
+              direction="zoom"
+              className="group h-full rounded-2xl bg-white/5 p-7 transition-colors duration-300 hover:bg-white/10"
+            >
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gold/15 text-gold-light">
                 <svg width="24" height="24" viewBox="0 0 24 24">
                   {icons[i]}
@@ -31,7 +40,7 @@ export default function WhyChooseUs() {
               <p className="mt-2 text-sm leading-relaxed text-white/70">
                 {item.description}
               </p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </Container>

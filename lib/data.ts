@@ -17,6 +17,11 @@ export const settings: CompanySettings = {
   name: "ENGOBO GROUP",
   tagline: "L'excellence au service de vos projets.",
   logo: "/logo.svg",
+  intro_image: "",
+  about_image: "",
+  cta_image: "",
+  contact_image: "",
+  contact_intro: "",
   description:
     "ENGOBO GROUP est une entreprise multi-services spécialisée dans l'importation, la marbrerie, l'ébénisterie, la menuiserie et le commerce général. Nous réalisons vos projets sur mesure, du concept à la pose, avec un souci constant de qualité et de finition.",
   address: "Centre-ville",

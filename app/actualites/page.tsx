@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import ArticleCard from "@/components/articles/ArticleCard";
+import ArticleFilters from "@/components/articles/ArticleFilters";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
-import { getArticles } from "@/lib/api";
+import { getArticles, getPageBanners } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Actualités",
@@ -11,29 +11,26 @@ export const metadata: Metadata = {
 };
 
 export default async function ArticlesPage() {
+  const banners = await getPageBanners();
   const articles = await getArticles();
 
   return (
     <>
       <PageHero
-        eyebrow="Le journal"
-        title="Actualités"
-        description="Nouvelles réalisations, nouveaux produits et conseils de nos équipes."
+        eyebrow={banners.actualites?.eyebrow ?? ""}
+        title={banners.actualites?.title ?? ""}
+        description={banners.actualites?.description ?? ""}
         breadcrumb={[{ label: "Accueil", href: "/" }, { label: "Actualités" }]}
-        image="hero-actualites"
+        image={banners.actualites?.image ?? ""}
       />
-      <section className="bg-white py-20 sm:py-24">
+      <section className="bg-surface py-20 sm:py-24">
         <Container>
           {articles.length === 0 ? (
-            <p className="text-center text-sm text-charcoal/60">
+            <p className="text-center text-sm text-body/60">
               Aucun article publié pour le moment.
             </p>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {articles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
-              ))}
-            </div>
+            <ArticleFilters articles={articles} />
           )}
         </Container>
       </section>

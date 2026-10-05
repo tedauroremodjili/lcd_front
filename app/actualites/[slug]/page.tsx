@@ -1,3 +1,5 @@
+import Tilt from "@/components/ui/Tilt";
+import Reveal from "@/components/ui/Reveal";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -37,39 +39,48 @@ export default async function ArticleDetailPage(
   const others = (await getArticles()).filter((a) => a.id !== article.id).slice(0, 3);
 
   return (
-    <article className="bg-white py-14 sm:py-20">
+    <article className="bg-surface py-14 sm:py-20">
       <Container className="max-w-3xl">
-        <nav className="mb-8 flex flex-wrap gap-2 text-xs text-charcoal/50">
-          <Link href="/" className="hover:text-navy">Accueil</Link>
+        <nav className="mb-8 flex flex-wrap gap-2 text-xs text-body/50">
+          <Link href="/" className="hover:text-heading">Accueil</Link>
           <span>/</span>
-          <Link href="/actualites" className="hover:text-navy">Actualités</Link>
+          <Link href="/actualites" className="hover:text-heading">Actualités</Link>
           <span>/</span>
-          <span className="text-navy">{article.title}</span>
+          <span className="text-heading">{article.title}</span>
         </nav>
 
-        <Badge tone="gold">{article.category.name}</Badge>
-        <h1 className="mt-4 font-serif-display text-3xl font-bold text-navy sm:text-4xl">
+        {article.category && <Badge tone="gold">{article.category.name}</Badge>}
+        <h1 className="mt-4 font-serif-display text-3xl font-bold text-heading sm:text-4xl">
           {article.title}
         </h1>
-        <p className="mt-3 text-sm text-charcoal/50">
+        <p className="mt-3 text-sm text-body/50">
           {formatDate(article.published_at)} — Par {article.author}
         </p>
 
-        <div className="mt-8 aspect-video overflow-hidden rounded-2xl">
+        <Reveal direction="wipe" className="mt-8 aspect-video overflow-hidden rounded-2xl">
           <ImagePlaceholder id={article.image} className="h-full w-full" />
-        </div>
+        </Reveal>
 
-        <div className="mt-10 space-y-5 leading-relaxed text-charcoal/75">
-          <p>{article.content}</p>
-        </div>
+        <Reveal className="mt-10 space-y-5 leading-relaxed text-body/75" delay={120}>
+          {article.content
+            .split(/\r?\n/)
+            .filter((p) => p.trim())
+            .map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+        </Reveal>
       </Container>
 
       {others.length > 0 && (
         <Container className="mt-24 max-w-6xl">
           <SectionHeading eyebrow="À lire aussi" title="Autres actualités" align="left" />
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {others.map((a) => (
-              <ArticleCard key={a.id} article={a} />
+            {others.map((a, i) => (
+              <Reveal key={a.id} delay={i * 110} className="h-full">
+                <Tilt className="h-full">
+                  <ArticleCard article={a} />
+                </Tilt>
+              </Reveal>
             ))}
           </div>
         </Container>

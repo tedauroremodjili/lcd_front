@@ -1,3 +1,4 @@
+import Reveal from "@/components/ui/Reveal";
 import type { CompanySettings } from "@/lib/types";
 import { whatsappLink } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/layout/Header";
@@ -60,31 +61,34 @@ export default function ContactInfoList({ settings }: { settings: CompanySetting
 
   return (
     <ul className="space-y-6">
-      {items.map((item) => (
-        <li key={item.label} className="flex gap-4">
+      {items.map((item, i) => (
+        <li key={item.label}>
+        <Reveal className="flex gap-4" delay={i * 90}>
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/15 text-gold-dark">
             {item.icon}
           </span>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-charcoal/50">
+            <p className="text-xs font-semibold uppercase tracking-wide text-body/50">
               {item.label}
             </p>
             {item.href ? (
-              <a href={item.href} className="font-medium text-navy hover:text-gold-dark">
+              <a href={item.href} className="font-medium text-heading hover:text-gold-dark">
                 {item.value}
               </a>
             ) : (
-              <p className="font-medium text-navy">{item.value}</p>
+              <p className="font-medium text-heading">{item.value}</p>
             )}
           </div>
+        </Reveal>
         </li>
       ))}
-      <li className="flex gap-4">
+      <li>
+      <Reveal className="flex gap-4" delay={items.length * 90}>
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#25D366]/15 text-[#1fa855]">
           <WhatsAppIcon className="h-5 w-5" />
         </span>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-charcoal/50">
+          <p className="text-xs font-semibold uppercase tracking-wide text-body/50">
             WhatsApp
           </p>
           <a
@@ -94,11 +98,12 @@ export default function ContactInfoList({ settings }: { settings: CompanySetting
             )}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-navy hover:text-gold-dark"
+            className="font-medium text-heading hover:text-gold-dark"
           >
             Discuter maintenant
           </a>
         </div>
+      </Reveal>
       </li>
     </ul>
   );

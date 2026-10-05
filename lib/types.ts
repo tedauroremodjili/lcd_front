@@ -35,6 +35,7 @@ export interface Product {
   id: number;
   name: string;
   slug: string;
+  stock_quantity?: number;
   reference: string;
   category: ProductCategory;
   description: string;
@@ -46,6 +47,9 @@ export interface Product {
   gallery: string[];
   featured: boolean;
   status: "published" | "draft";
+  likes_count?: number;
+  reviews_count?: number;
+  rating_average?: number | null;
 }
 
 export interface Project {
@@ -105,10 +109,74 @@ export interface HeroSlide {
   status: "published" | "draft";
 }
 
+export interface AboutValue {
+  title: string;
+  description: string;
+}
+
+export interface AboutStat {
+  value: string;
+  label: string;
+}
+
+export interface WeatherCity {
+  city: string;
+  temperature: number;
+  code: number;
+  condition: string;
+}
+
+export interface WeatherInfo {
+  country: string;
+  cities: WeatherCity[];
+}
+
+export interface Review {
+  id: number;
+  name: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+}
+
+export interface ReviewsPayload {
+  reviews: Review[];
+  average: number | null;
+  count: number;
+}
+
+export interface AboutContent {
+  hero_eyebrow: string;
+  hero_title: string;
+  hero_description: string;
+  hero_image: string;
+  history_title: string;
+  history_text: string;
+  history_extra: string;
+  history_image: string;
+  mission_title: string;
+  mission_text: string;
+  vision_title: string;
+  vision_text: string;
+  savoir_faire_title: string;
+  savoir_faire_text: string;
+  values: AboutValue[];
+  stats: AboutStat[];
+  team_eyebrow: string;
+  team_title: string;
+  team_description: string;
+  team_photos: string[];
+}
+
 export interface CompanySettings {
   name: string;
   tagline: string;
   logo: string;
+  intro_image: string;
+  about_image: string;
+  cta_image: string;
+  contact_image: string;
+  contact_intro: string;
   description: string;
   address: string;
   city: string;
@@ -142,6 +210,7 @@ export interface QuoteRequestPayload {
   description: string;
   budget?: string;
   desired_date?: string;
+  attachments?: File[];
 }
 
 export interface ContactMessagePayload {
@@ -150,4 +219,19 @@ export interface ContactMessagePayload {
   phone?: string;
   subject: string;
   message: string;
+}
+
+// Chatbot content managed in the back-office (GET /api/chatbot).
+export interface ChatbotButton {
+  label: string;
+  message?: string;
+  url?: string;
+}
+
+export interface ChatbotConfig {
+  welcome: { id: number; text: string; buttons: ChatbotButton[]; page: string | null }[];
+  quick_replies: { id: number; label: string; message?: string; url?: string; page?: string | null }[];
+  nudges: { id: number; text: string; page: string | null }[];
+  fallback: { text: string; buttons: ChatbotButton[] } | null;
+  faq: { id: number; title: string; keywords: string[]; answer: string; buttons: ChatbotButton[] }[];
 }

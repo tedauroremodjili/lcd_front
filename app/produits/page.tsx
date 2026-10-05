@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import ProductCatalog from "@/components/products/ProductCatalog";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
-import { getProductCategories, getProducts } from "@/lib/api";
+import { getProductCategories, getProducts, getPageBanners } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Nos produits",
@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProductsPage() {
+  const banners = await getPageBanners();
   const [products, categories] = await Promise.all([
     getProducts(),
     getProductCategories(),
@@ -19,13 +20,13 @@ export default async function ProductsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Catalogue"
-        title="Nos produits"
-        description="Une sélection de matériaux et de mobilier disponibles à la vente ou sur devis."
+        eyebrow={banners.produits?.eyebrow ?? ""}
+        title={banners.produits?.title ?? ""}
+        description={banners.produits?.description ?? ""}
         breadcrumb={[{ label: "Accueil", href: "/" }, { label: "Produits" }]}
-        image="hero-produits"
+        image={banners.produits?.image ?? ""}
       />
-      <section className="bg-white py-20 sm:py-24">
+      <section className="bg-surface py-20 sm:py-24">
         <Container>
           <ProductCatalog products={products} categories={categories} />
         </Container>

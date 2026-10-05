@@ -6,7 +6,7 @@ export default function ServiceCard({ service }: { service: Service }) {
   return (
     <Link
       href={`/services/${service.slug}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_2px_20px_rgba(6,37,74,0.08)] transition-shadow hover:shadow-[0_8px_30px_rgba(6,37,74,0.15)]"
+      className="group relative flex flex-col overflow-hidden rounded-2xl bg-surface shadow-[0_2px_20px_rgba(6,37,74,0.08)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_14px_40px_rgba(6,37,74,0.18)]"
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <ImagePlaceholder
@@ -15,10 +15,10 @@ export default function ServiceCard({ service }: { service: Service }) {
         />
       </div>
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="font-serif-display text-xl font-bold text-navy">
+        <h3 className="font-serif-display text-xl font-bold text-heading">
           {service.name}
         </h3>
-        <p className="mt-3 flex-1 text-sm leading-relaxed text-charcoal/70">
+        <p className="mt-3 flex-1 text-sm leading-relaxed text-body/70">
           {service.short_description}
         </p>
         <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gold-dark">

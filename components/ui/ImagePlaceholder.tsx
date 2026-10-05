@@ -1,10 +1,9 @@
 import Image from "next/image";
-import { unsplashPhotos, unsplashUrl } from "@/lib/images";
 
-// Renders the real photo mapped in lib/images.ts for this content id. Falls
-// back to a branded gradient placeholder for any id not yet mapped (e.g.
-// newly added content) until it's swapped for real ENGOBO GROUP photography
-// via the media library (cahier des charges §33).
+// Renders an image uploaded through the back-office (URL or /storage path).
+// Anything else (empty value, API down) gets a neutral gradient placeholder:
+// the front ships no photos of its own. Images are loaded straight from the
+// back-end (unoptimized) so Next's image cache never serves them once it is off.
 
 const gradients = [
   "from-navy via-navy-light to-navy-dark",
@@ -26,34 +25,36 @@ export default function ImagePlaceholder({
   className = "",
   priority = false,
 }: {
-  id: string;
+  id: string | null | undefined;
   className?: string;
   priority?: boolean;
 }) {
-  const photoHash = unsplashPhotos[id];
+  const key = id ?? "";
+  const isRealUrl = /^(https?:)?\/\//.test(key) || key.startsWith("/storage/");
 
-  if (photoHash) {
+  if (isRealUrl) {
     return (
       <div className={`relative overflow-hidden ${className}`}>
         <Image
-          src={unsplashUrl(photoHash)}
+          src={key}
           alt=""
           fill
           sizes="(min-width: 1024px) 60vw, 100vw"
           className="object-cover"
           priority={priority}
+          unoptimized
         />
       </div>
     );
   }
 
-  const gradient = gradients[hashOf(id) % gradients.length];
+  const gradient = gradients[hashOf(key) % gradients.length];
 
   return (
     <div
-      className={`relative flex items-center justify-center overflow-hidden bg-gradient-to-br ${gradient} ${className}`}
+      className={`relative flex items-center justify-center overflow-hidden bg-linear-to-br ${gradient} ${className}`}
     >
-      <div className="absolute inset-0 opacity-10 [background-image:repeating-linear-gradient(45deg,#fff_0,#fff_1px,transparent_1px,transparent_14px)]" />
+      <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,#fff_0,#fff_1px,transparent_1px,transparent_14px)]" />
       <svg
         width="15%"
         viewBox="0 0 38 34"

@@ -1,35 +1,38 @@
 import Image from "next/image";
 
-// Official ENGOBO GROUP logo (public/lcd.png). The source file has an
-// opaque white background, so on dark sections (variant="light") it's
-// mounted on a small white card rather than floating directly on navy.
+// Official ENGOBO GROUP logo, transparent background, in two colorways:
+// logo-light.png (original navy/gold) for light surfaces and logo-dark.png
+// (navy turned white) for dark surfaces. `auto` follows the site theme;
+// `onDark` is for sections that are always navy (footer).
 export default function Logo({
-  variant = "dark",
+  variant = "auto",
   className = "",
 }: {
-  variant?: "dark" | "light";
+  variant?: "auto" | "onDark";
   className?: string;
 }) {
-  const image = (
-    <Image
-      src="/lcd.png"
-      alt="ENGOBO GROUP"
-      width={1484}
-      height={1060}
-      priority
-      className="h-12 w-auto object-contain sm:h-14"
-    />
+  const size = "h-12 w-auto object-contain sm:h-14";
+
+  return (
+    <span className={`inline-flex items-center ${className}`}>
+      {variant === "auto" && (
+        <Image
+          src="/logo-light.png"
+          alt="ENGOBO GROUP"
+          width={1443}
+          height={958}
+          priority
+          className={`${size} dark:hidden`}
+        />
+      )}
+      <Image
+        src="/logo-dark.png"
+        alt={variant === "auto" ? "" : "ENGOBO GROUP"}
+        aria-hidden={variant === "auto" ? true : undefined}
+        width={1443}
+        height={958}
+        className={variant === "auto" ? `${size} hidden dark:block` : size}
+      />
+    </span>
   );
-
-  if (variant === "light") {
-    return (
-      <div
-        className={`inline-flex items-center rounded-xl bg-white px-3 py-2 shadow-sm ${className}`}
-      >
-        {image}
-      </div>
-    );
-  }
-
-  return <div className={`inline-flex items-center ${className}`}>{image}</div>;
 }

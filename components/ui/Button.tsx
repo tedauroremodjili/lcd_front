@@ -5,13 +5,13 @@ type Variant = "primary" | "secondary" | "outline-light" | "ghost";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-gold text-navy hover:bg-gold-light shadow-sm shadow-gold/30",
+    "bg-gold text-navy hover:bg-gold-light hover:shadow-lg hover:shadow-gold/40 shadow-sm shadow-gold/30",
   secondary:
     "bg-navy text-white hover:bg-navy-light",
   "outline-light":
     "border border-white/60 text-white hover:bg-white hover:text-navy",
   ghost:
-    "border border-navy/20 text-navy hover:bg-navy hover:text-white",
+    "border border-subtle/20 text-heading hover:bg-navy hover:text-white",
 };
 
 interface ButtonProps {
@@ -37,7 +37,7 @@ export default function Button({
   target,
   rel,
 }: ButtonProps) {
-  const classes = `inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold uppercase tracking-wide transition-colors duration-200 disabled:opacity-50 disabled:pointer-events-none ${variants[variant]} ${className}`;
+  const classes = `inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold uppercase tracking-wide btn-sheen transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] disabled:opacity-50 disabled:pointer-events-none ${variants[variant]} ${className}`;
 
   if (href) {
     return (

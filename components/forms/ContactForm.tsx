@@ -5,26 +5,32 @@ import Button from "@/components/ui/Button";
 import { submitContactMessage } from "@/lib/api";
 
 const inputClasses =
-  "w-full rounded-lg border border-navy/15 bg-white px-4 py-3 text-sm text-navy placeholder:text-charcoal/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30";
-const labelClasses = "mb-2 block text-sm font-semibold text-navy";
+  "w-full rounded-lg border border-subtle/15 bg-surface px-4 py-3 text-sm text-heading placeholder:text-body/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30";
+const labelClasses = "mb-2 block text-sm font-semibold text-heading";
 
 export default function ContactForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("submitting");
+    setError(null);
 
     const form = new FormData(e.currentTarget);
-    await submitContactMessage({
-      name: String(form.get("name") ?? ""),
-      email: String(form.get("email") ?? ""),
-      phone: (form.get("phone") as string) || undefined,
-      subject: String(form.get("subject") ?? ""),
-      message: String(form.get("message") ?? ""),
-    });
-
-    setStatus("success");
+    try {
+      await submitContactMessage({
+        name: String(form.get("name") ?? ""),
+        email: String(form.get("email") ?? ""),
+        phone: (form.get("phone") as string) || undefined,
+        subject: String(form.get("subject") ?? ""),
+        message: String(form.get("message") ?? ""),
+      });
+      setStatus("success");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Une erreur est survenue.");
+      setStatus("idle");
+    }
   }
 
   if (status === "success") {
@@ -35,10 +41,10 @@ export default function ContactForm() {
             <path d="M4 10l4 4 8-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        <h3 className="font-serif-display text-xl font-bold text-navy">
+        <h3 className="font-serif-display text-xl font-bold text-heading">
           Message envoyé
         </h3>
-        <p className="mt-2 text-sm text-charcoal/70">
+        <p className="mt-2 text-sm text-body/70">
           Merci de nous avoir contactés. Nous répondrons à votre message dans les meilleurs
           délais.
         </p>
@@ -79,6 +85,11 @@ export default function ContactForm() {
         <textarea id="message" name="message" required rows={5} className={inputClasses} />
       </div>
       <div className="sm:col-span-2">
+        {error && (
+          <p role="alert" className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </p>
+        )}
         <Button type="submit" variant="primary" className="w-full" disabled={status === "submitting"}>
           {status === "submitting" ? "Envoi en cours..." : "Envoyer le message"}
         </Button>

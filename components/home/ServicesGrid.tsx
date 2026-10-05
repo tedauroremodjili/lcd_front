@@ -1,22 +1,37 @@
 import ServiceCard from "@/components/services/ServiceCard";
 import Container from "@/components/ui/Container";
+import ScrollRow from "@/components/ui/ScrollRow";
+import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
+import Tilt from "@/components/ui/Tilt";
+import { getTexts } from "@/lib/api";
+import { txt } from "@/lib/texts";
 import type { Service } from "@/lib/types";
 
-export default function ServicesGrid({ services }: { services: Service[] }) {
+export default async function ServicesGrid({ services }: { services: Service[] }) {
+  const texts = await getTexts();
   return (
-    <section className="bg-offwhite py-20 sm:py-28">
+    <section className="bg-surface-alt py-20 sm:py-28">
       <Container>
         <SectionHeading
-          eyebrow="Ce que nous faisons"
-          title="Nos domaines d'activité"
-          description="Cinq métiers complémentaires pour accompagner vos projets du sourcing des matériaux à la pose finale."
+          eyebrow={txt(texts, "home.services_eyebrow")}
+          title={txt(texts, "home.services_title")}
+          description={txt(texts, "home.services_text")}
         />
-        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((service) => (
-            <ServiceCard key={service.id} service={service} />
-          ))}
-        </div>
+        <Reveal className="mt-14" delay={120}>
+          <ScrollRow fadeFrom="from-surface-alt">
+            {services.map((service) => (
+              <div
+                key={service.id}
+                className="w-[82%] shrink-0 snap-start sm:w-[46%] lg:w-[31%]"
+              >
+                <Tilt className="h-full">
+                  <ServiceCard service={service} />
+                </Tilt>
+              </div>
+            ))}
+          </ScrollRow>
+        </Reveal>
       </Container>
     </section>
   );

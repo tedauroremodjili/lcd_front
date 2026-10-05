@@ -5,28 +5,110 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Container from "@/components/ui/Container";
 import Logo from "@/components/ui/Logo";
-import { settings } from "@/lib/data";
+import SocialIcons, { WhatsAppIcon } from "@/components/ui/SocialIcons";
+import ThemeToggle from "@/components/ui/ThemeToggle";
+import WeatherChip from "@/components/layout/WeatherChip";
+import type { CompanySettings, Service, WeatherInfo } from "@/lib/types";
+import { txt, type Texts } from "@/lib/texts";
 import { whatsappLink } from "@/lib/utils";
 
-const navLinks = [
-  { href: "/", label: "Accueil" },
-  { href: "/a-propos", label: "À propos" },
-  { href: "/services", label: "Services" },
-  { href: "/realisations", label: "Réalisations" },
-  { href: "/produits", label: "Produits" },
-  { href: "/devis", label: "Devis" },
-  { href: "/contact", label: "Contact" },
-];
+export { WhatsAppIcon };
 
-export default function Header() {
+type NavLink = { href: string; label: string };
+type NavItem =
+  | { type: "link"; href: string; label: string }
+  | { type: "dropdown"; label: string; items: NavLink[] };
+
+function buildNavItems(services: Service[], texts: Texts): NavItem[] {
+  return [
+    { type: "link", href: "/", label: txt(texts, "menu.home") },
+    {
+      type: "dropdown",
+      label: txt(texts, "menu.services"),
+      items: [
+        ...services.map((s) => ({ href: `/services/${s.slug}`, label: s.name })),
+        { href: "/services", label: txt(texts, "menu.services_all") },
+      ],
+    },
+    { type: "link", href: "/realisations", label: txt(texts, "menu.projects") },
+    { type: "link", href: "/produits", label: txt(texts, "menu.products") },
+    {
+      type: "dropdown",
+      label: txt(texts, "menu.about"),
+      items: [
+        { href: "/a-propos", label: txt(texts, "menu.about_company") },
+        { href: "/actualites", label: txt(texts, "menu.news") },
+      ],
+    },
+    { type: "link", href: "/contact", label: txt(texts, "menu.contact") },
+  ];
+}
+
+function isActive(pathname: string, href: string) {
+  return href === "/" ? pathname === "/" : pathname.startsWith(href);
+}
+
+const navLinkBase =
+  "relative text-[13px] font-semibold uppercase tracking-wide transition-colors xl:text-sm after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-gold after:transition-transform after:duration-300 hover:after:scale-x-100";
+
+const iconProps = {
+  width: 14,
+  height: 14,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.8,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+  "aria-hidden": true,
+};
+
+const PhoneIcon = () => (
+  <svg {...iconProps}>
+    <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8 9.7a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2Z" />
+  </svg>
+);
+const ClockIcon = () => (
+  <svg {...iconProps}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3 2" />
+  </svg>
+);
+const PinIcon = () => (
+  <svg {...iconProps}>
+    <path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21Z" />
+    <circle cx="12" cy="9.5" r="2.5" />
+  </svg>
+);
+const MailIcon = () => (
+  <svg {...iconProps}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="m3 7 9 6 9-6" />
+  </svg>
+);
+
+export default function Header({
+  services,
+  settings,
+  texts,
+  weather,
+}: {
+  services: Service[];
+  settings: CompanySettings;
+  texts: Texts;
+  weather: WeatherInfo | null;
+}) {
+  const navItems = buildNavItems(services, texts);
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [lastPathname, setLastPathname] = useState(pathname);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   if (pathname !== lastPathname) {
     setLastPathname(pathname);
     setOpen(false);
+    if (openDropdown) setOpenDropdown(null);
   }
 
   useEffect(() => {
@@ -43,119 +125,243 @@ export default function Header() {
     };
   }, [open]);
 
+  const phones = [settings.phone_1, settings.phone_2].filter(Boolean).join(" · ");
+  const waLink = whatsappLink(
+    settings.whatsapp,
+    "Bonjour ENGOBO GROUP, je souhaite obtenir des informations concernant vos services."
+  );
+
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        scrolled
-          ? "bg-white/95 shadow-sm backdrop-blur-sm"
-          : "bg-white/90 backdrop-blur-sm"
+      className={`animate-header-in sticky top-0 z-50 w-full transition-shadow duration-300 ${
+        scrolled ? "shadow-md shadow-navy/10" : ""
       }`}
     >
-      <Container className="flex h-20 items-center justify-between">
-        <Link href="/" aria-label="ENGOBO GROUP - Accueil">
-          <Logo />
-        </Link>
+      {/* Top bar: contact info (left) and social networks (right). Collapses on scroll. */}
+      <div
+        className={`hidden bg-navy text-white/80 transition-all duration-300 lg:block ${
+          scrolled ? "invisible max-h-0 opacity-0" : "max-h-10 opacity-100"
+        }`}
+      >
+        <Container className="flex h-10 items-center justify-between text-xs">
+          <div className="flex items-center gap-6">
+            {phones && (
+              <a href={`tel:${settings.phone_1}`} className="flex items-center gap-2 transition-colors hover:text-gold-light">
+                <PhoneIcon />
+                {phones}
+              </a>
+            )}
+            {settings.hours_weekdays && (
+              <span className="hidden items-center gap-2 xl:flex">
+                <ClockIcon />
+                {settings.hours_weekdays}
+              </span>
+            )}
+            {weather && (
+              <span className="hidden items-center gap-2 lg:flex">
+                <WeatherChip weather={weather} />
+              </span>
+            )}
+            {settings.city && (
+              <span className="hidden items-center gap-2 2xl:flex">
+                <PinIcon />
+                {settings.address}, {settings.city}
+              </span>
+            )}
+          </div>
 
-        <nav className="hidden items-center gap-6 lg:flex xl:gap-9">
-          {navLinks.map((link) => {
-            const active =
-              link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+          <div className="flex items-center gap-4">
+            {settings.email && (
+              <a href={`mailto:${settings.email}`} className="hidden items-center gap-2 transition-colors hover:text-gold-light xl:flex">
+                <MailIcon />
+                {settings.email}
+              </a>
+            )}
+            <span className="hidden h-4 w-px bg-white/20 xl:block" />
+            <SocialIcons settings={settings} variant="topbar" />
+          </div>
+        </Container>
+      </div>
+
+      {/* Main bar: logo, navigation, theme + call to action. */}
+      <div className="bg-surface/95 backdrop-blur-md">
+        <Container className="flex h-20 items-center justify-between gap-6">
+          <Link href="/" aria-label="ENGOBO GROUP - Accueil" className="shrink-0">
+            <Logo />
+          </Link>
+
+          <nav className="hidden items-center gap-5 lg:flex xl:gap-8">
+            {navItems.map((item) => {
+              if (item.type === "link") {
+                const active = isActive(pathname, item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`${navLinkBase} ${
+                      active ? "text-gold-dark after:scale-x-100" : "text-heading hover:text-gold-dark"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              }
+
+              const active = item.items.some((sub) => isActive(pathname, sub.href));
+              const isOpen = openDropdown === item.label;
+
+              return (
+                <div
+                  key={item.label}
+                  className="relative"
+                  onMouseEnter={() => setOpenDropdown(item.label)}
+                  onMouseLeave={() => setOpenDropdown((v) => (v === item.label ? null : v))}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropdown((v) => (v === item.label ? null : item.label))}
+                    aria-expanded={isOpen}
+                    className={`${navLinkBase} flex items-center gap-1.5 ${
+                      active || isOpen ? "text-gold-dark after:scale-x-100" : "text-heading hover:text-gold-dark"
+                    }`}
+                  >
+                    {item.label}
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 10 10"
+                      fill="none"
+                      className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    >
+                      <path d="m2 3.5 3 3 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+
+                  <div
+                    className={`absolute left-1/2 top-full w-56 -translate-x-1/2 pt-4 transition-all duration-150 ${
+                      isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
+                    }`}
+                  >
+                    <div className="overflow-hidden rounded-xl border border-subtle/10 bg-surface py-2 shadow-lg shadow-navy/10">
+                      {item.items.map((sub) => (
+                        <Link
+                          key={sub.href}
+                          href={sub.href}
+                          className={`block px-4 py-2.5 text-sm font-medium transition-colors ${
+                            isActive(pathname, sub.href)
+                              ? "bg-surface-alt text-gold-dark"
+                              : "text-heading hover:bg-surface-alt hover:text-gold-dark"
+                          }`}
+                        >
+                          {sub.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </nav>
+
+          <div className="hidden shrink-0 items-center gap-3 lg:flex">
+            <ThemeToggle />
+            <Link
+              href="/devis"
+              className="btn-sheen inline-flex items-center gap-2 rounded-full bg-gold px-5 py-2.5 text-[13px] font-semibold uppercase tracking-wide text-navy shadow-sm shadow-gold/30 transition-all duration-200 hover:-translate-y-0.5 hover:bg-gold-light hover:shadow-lg hover:shadow-gold/40 xl:text-sm"
+            >
+              {txt(texts, "menu.quote_cta")}
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10m0 0L9 4m4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-2 lg:hidden">
+            <ThemeToggle />
+            <button
+              type="button"
+              aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-expanded={open}
+              onClick={() => setOpen((v) => !v)}
+              className="flex h-10 w-10 flex-col items-center justify-center gap-1.5"
+            >
+              <span className={`block h-0.5 w-6 bg-heading transition-transform ${open ? "translate-y-2 rotate-45" : ""}`} />
+              <span className={`block h-0.5 w-6 bg-heading transition-opacity ${open ? "opacity-0" : ""}`} />
+              <span className={`block h-0.5 w-6 bg-heading transition-transform ${open ? "-translate-y-2 -rotate-45" : ""}`} />
+            </button>
+          </div>
+        </Container>
+      </div>
+
+      {/* Mobile menu */}
+      <div
+        className={`absolute inset-x-0 top-full z-40 max-h-[calc(100dvh-5rem)] origin-top overflow-y-auto bg-surface shadow-lg transition-all duration-200 lg:hidden ${
+          open ? "pointer-events-auto opacity-100" : "pointer-events-none -translate-y-2 opacity-0"
+        }`}
+      >
+        <nav className="flex flex-col divide-y divide-subtle/10 px-5">
+          {navItems.map((item) => {
+            if (item.type === "link") {
+              return (
+                <Link key={item.href} href={item.href} className="py-4 text-base font-semibold text-heading">
+                  {item.label}
+                </Link>
+              );
+            }
+
             return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-semibold uppercase tracking-wide transition-colors ${
-                  active ? "text-gold-dark" : "text-navy hover:text-gold-dark"
-                }`}
-              >
-                {link.label}
-              </Link>
+              <div key={item.label} className="py-4">
+                <p className="text-base font-semibold text-heading">{item.label}</p>
+                <div className="mt-2 flex flex-col gap-1 pl-3">
+                  {item.items.map((sub) => (
+                    <Link key={sub.href} href={sub.href} className="py-1.5 text-sm text-body/70">
+                      {sub.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             );
           })}
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <a
-            href={whatsappLink(
-              settings.whatsapp,
-              "Bonjour ENGOBO GROUP, je souhaite obtenir des informations concernant vos services."
-            )}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-light"
+        <div className="space-y-3 px-5 pb-6 pt-4">
+          <Link
+            href="/devis"
+            className="flex items-center justify-center gap-2 rounded-full bg-gold px-5 py-3.5 text-sm font-semibold uppercase tracking-wide text-navy"
           >
-            <WhatsAppIcon className="h-4 w-4" />
-            WhatsApp
-          </a>
-        </div>
+            Demander un devis gratuit
+          </Link>
 
-        <button
-          type="button"
-          aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 lg:hidden"
-        >
-          <span
-            className={`block h-0.5 w-6 bg-navy transition-transform ${
-              open ? "translate-y-2 rotate-45" : ""
-            }`}
-          />
-          <span
-            className={`block h-0.5 w-6 bg-navy transition-opacity ${
-              open ? "opacity-0" : ""
-            }`}
-          />
-          <span
-            className={`block h-0.5 w-6 bg-navy transition-transform ${
-              open ? "-translate-y-2 -rotate-45" : ""
-            }`}
-          />
-        </button>
-      </Container>
-
-      {/* Mobile menu */}
-      <div
-        className={`fixed inset-x-0 top-20 z-40 origin-top bg-white shadow-lg transition-all duration-200 lg:hidden ${
-          open
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none -translate-y-2 opacity-0"
-        }`}
-      >
-        <nav className="flex flex-col divide-y divide-navy/10 px-5">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="py-4 text-base font-semibold text-navy"
+          <div className="grid grid-cols-2 gap-3">
+            <a
+              href={`tel:${settings.phone_1}`}
+              className="flex items-center justify-center gap-2 rounded-full border border-subtle/20 px-4 py-3 text-sm font-semibold text-heading"
             >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="px-5 pb-6 pt-2">
-          <a
-            href={whatsappLink(
-              settings.whatsapp,
-              "Bonjour ENGOBO GROUP, je souhaite obtenir des informations concernant vos services."
+              <PhoneIcon />
+              Appeler
+            </a>
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white"
+            >
+              <WhatsAppIcon className="h-4 w-4" />
+              WhatsApp
+            </a>
+          </div>
+
+          <div className="flex items-center justify-between gap-4 border-t border-subtle/10 pt-4">
+            <SocialIcons settings={settings} variant="menu" />
+            {settings.hours_weekdays && (
+              <p className="flex items-center gap-1.5 text-right text-xs text-body/60">
+                <ClockIcon />
+                {settings.hours_weekdays}
+              </p>
             )}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 rounded-full bg-navy px-5 py-3 text-sm font-semibold text-white"
-          >
-            <WhatsAppIcon className="h-4 w-4" />
-            Contacter sur WhatsApp
-          </a>
+          </div>
         </div>
       </div>
     </header>
-  );
-}
-
-export function WhatsAppIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 32 32" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M16.004 2.667c-7.36 0-13.333 5.973-13.333 13.333 0 2.353.615 4.56 1.692 6.475L2.667 29.333l7.03-1.844a13.26 13.26 0 0 0 6.307 1.605h.006c7.36 0 13.333-5.973 13.333-13.333S23.364 2.667 16.004 2.667Zm0 24.395a11 11 0 0 1-5.61-1.537l-.402-.239-4.172 1.094 1.114-4.067-.262-.418a10.98 10.98 0 0 1-1.685-5.895c0-6.078 4.944-11.022 11.022-11.022 6.077 0 11.02 4.944 11.02 11.022 0 6.077-4.943 11.062-11.025 11.062Zm6.043-8.257c-.331-.166-1.96-.967-2.264-1.077-.303-.11-.524-.166-.744.166-.221.331-.855 1.077-1.048 1.298-.193.221-.386.249-.717.083-.331-.166-1.398-.516-2.663-1.643-.984-.878-1.65-1.963-1.843-2.294-.193-.331-.02-.51.146-.675.15-.149.331-.386.497-.58.166-.192.221-.33.331-.551.11-.221.055-.414-.028-.58-.083-.166-.744-1.795-1.02-2.458-.269-.645-.542-.558-.744-.568l-.634-.011c-.221 0-.58.083-.883.414-.303.331-1.157 1.13-1.157 2.76 0 1.628 1.185 3.202 1.35 3.423.166.221 2.332 3.562 5.65 4.995.79.341 1.406.545 1.886.697.792.252 1.513.216 2.083.131.635-.095 1.96-.802 2.236-1.575.276-.773.276-1.436.193-1.575-.083-.138-.303-.221-.634-.386Z" />
-    </svg>
   );
 }

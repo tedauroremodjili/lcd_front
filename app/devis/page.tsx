@@ -1,9 +1,10 @@
+import Reveal from "@/components/ui/Reveal";
 import type { Metadata } from "next";
 import QuoteForm from "@/components/forms/QuoteForm";
 import ContactInfoList from "@/components/contact/ContactInfoList";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
-import { getProductBySlug, getSettings } from "@/lib/api";
+import { getProductBySlug, getSettings, getPageBanners } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Demander un devis",
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function DevisPage(props: PageProps<"/devis">) {
+  const banners = await getPageBanners();
   const searchParams = await props.searchParams;
   const settings = await getSettings();
 
@@ -22,26 +24,29 @@ export default async function DevisPage(props: PageProps<"/devis">) {
   return (
     <>
       <PageHero
-        eyebrow="Votre projet"
-        title="Demander un devis"
-        description="Aucune création de compte nécessaire. Décrivez votre projet, notre équipe vous recontacte rapidement."
+        eyebrow={banners.devis?.eyebrow ?? ""}
+        title={banners.devis?.title ?? ""}
+        description={banners.devis?.description ?? ""}
         breadcrumb={[{ label: "Accueil", href: "/" }, { label: "Devis" }]}
-        image="hero-devis"
+        image={banners.devis?.image ?? ""}
       />
-      <section className="bg-white py-20 sm:py-24">
+      <section className="bg-surface py-20 sm:py-24">
         <Container className="grid gap-14 lg:grid-cols-[1.5fr_1fr]">
+          <Reveal direction="left">
           <QuoteForm
             defaultService={serviceParam}
             defaultDescription={
               product ? `Je suis intéressé par le produit "${product.name}".` : undefined
             }
           />
+          </Reveal>
 
-          <aside className="h-fit rounded-2xl bg-offwhite p-8">
-            <h3 className="font-serif-display text-lg font-bold text-navy">
+          <Reveal direction="right" delay={150} className="h-fit">
+          <aside className="h-fit rounded-2xl bg-surface-alt p-8">
+            <h3 className="font-serif-display text-lg font-bold text-heading">
               Besoin d&apos;échanger directement ?
             </h3>
-            <p className="mt-2 text-sm text-charcoal/70">
+            <p className="mt-2 text-sm text-body/70">
               Notre équipe reste disponible par téléphone ou WhatsApp pour répondre à vos
               questions.
             </p>
@@ -49,6 +54,7 @@ export default async function DevisPage(props: PageProps<"/devis">) {
               <ContactInfoList settings={settings} />
             </div>
           </aside>
+          </Reveal>
         </Container>
       </section>
     </>

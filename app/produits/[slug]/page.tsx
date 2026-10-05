@@ -1,14 +1,16 @@
+import Tilt from "@/components/ui/Tilt";
+import Reveal from "@/components/ui/Reveal";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import Gallery from "@/components/gallery/Gallery";
 import ProductCard from "@/components/products/ProductCard";
-import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import Container from "@/components/ui/Container";
+import PageHero from "@/components/ui/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { WhatsAppIcon } from "@/components/layout/Header";
-import { getProductBySlug, getProducts, getSettings } from "@/lib/api";
+import ReviewsSection from "@/components/reviews/ReviewsSection";
+import { getProductBySlug, getProducts, getReviews, getSettings } from "@/lib/api";
 import { formatPrice, whatsappLink } from "@/lib/utils";
 
 export async function generateStaticParams() {
@@ -45,67 +47,73 @@ export default async function ProductDetailPage(
   ]);
   if (!product) notFound();
 
-  const similar = (
-    await getProducts({ category: product.category.slug })
-  ).filter((p) => p.id !== product.id);
+  const [similar, reviews] = await Promise.all([
+    getProducts({ category: product.category.slug }).then((list) =>
+      list.filter((p) => p.id !== product.id)
+    ),
+    getReviews({ product: product.slug }),
+  ]);
 
   return (
-    <section className="bg-white py-14 sm:py-20">
+    <>
+      <PageHero
+        eyebrow={product.category.name}
+        title={product.name}
+        description={`Référence : ${product.reference}`}
+        breadcrumb={[
+          { label: "Accueil", href: "/" },
+          { label: "Produits", href: "/produits" },
+          { label: product.name },
+        ]}
+        image={product.image}
+      />
+
+      <section className="bg-surface py-14 sm:py-20">
       <Container>
-        <nav className="mb-8 flex flex-wrap gap-2 text-xs text-charcoal/50">
-          <Link href="/" className="hover:text-navy">Accueil</Link>
-          <span>/</span>
-          <Link href="/produits" className="hover:text-navy">Produits</Link>
-          <span>/</span>
-          <span className="text-navy">{product.name}</span>
-        </nav>
 
         <div className="grid gap-14 lg:grid-cols-2">
-          <Gallery images={[product.image, ...product.gallery]} alt={product.name} />
+          <Reveal direction="left">
+            <Gallery images={[product.image, ...product.gallery]} alt={product.name} />
+          </Reveal>
 
-          <div>
-            <Badge tone="gold">{product.category.name}</Badge>
-            <h1 className="mt-4 font-serif-display text-3xl font-bold text-navy sm:text-4xl">
-              {product.name}
-            </h1>
-            <p className="mt-2 text-sm font-medium text-charcoal/50">
-              Référence : {product.reference}
-            </p>
-
-            <p className="mt-6 leading-relaxed text-charcoal/70">{product.description}</p>
+          <Reveal direction="right" delay={150}>
+            <p className="mt-6 leading-relaxed text-body/70">{product.description}</p>
 
             {product.characteristics.length > 0 && (
-              <dl className="mt-8 space-y-3 rounded-xl bg-offwhite p-6">
+              <dl className="mt-8 space-y-3 rounded-xl bg-surface-alt p-6">
                 {product.characteristics.map((c) => (
                   <div key={c.label} className="flex justify-between gap-4 text-sm">
-                    <dt className="text-charcoal/50">{c.label}</dt>
-                    <dd className="font-medium text-navy">{c.value}</dd>
+                    <dt className="text-body/50">{c.label}</dt>
+                    <dd className="font-medium text-heading">{c.value}</dd>
                   </div>
                 ))}
               </dl>
             )}
 
-            <div className="mt-8 flex items-center justify-between rounded-xl border border-navy/10 px-6 py-5">
+            <div className="mt-8 flex items-center justify-between rounded-xl border border-subtle/10 px-6 py-5">
               <div>
-                <p className="text-xs uppercase tracking-wide text-charcoal/50">Prix</p>
-                <p className="text-xl font-bold text-navy">
+                <p className="text-xs uppercase tracking-wide text-body/50">Prix</p>
+                <p className="text-xl font-bold text-heading">
                   {product.price_type === "on_quote"
                     ? "Sur devis"
                     : formatPrice(product.price!)}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-xs uppercase tracking-wide text-charcoal/50">
+                <p className="text-xs uppercase tracking-wide text-body/50">
                   Disponibilité
                 </p>
-                <p className="text-sm font-semibold text-navy">
-                  {availabilityLabels[product.availability]}
+                <p className="text-sm font-semibold text-heading">
+                  {product.stock_quantity !== undefined ? (product.stock_quantity > 0 ? `${product.stock_quantity} en stock` : "Rupture de stock") : availabilityLabels[product.availability]}
                 </p>
               </div>
             </div>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button href={`/devis?produit=${product.slug}`} variant="primary" className="flex-1">
+              <Button href={`/commande?produit=${product.slug}`} variant="primary" className="flex-1">
+                Commander
+              </Button>
+              <Button href={`/devis?produit=${product.slug}`} variant="ghost" className="flex-1">
                 Demander un devis
               </Button>
               <Button
@@ -122,7 +130,7 @@ export default async function ProductDetailPage(
                 WhatsApp
               </Button>
             </div>
-          </div>
+          </Reveal>
         </div>
       </Container>
 
@@ -130,12 +138,18 @@ export default async function ProductDetailPage(
         <Container className="mt-24">
           <SectionHeading eyebrow="Catalogue" title="Produits similaires" align="left" />
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {similar.slice(0, 4).map((p) => (
-              <ProductCard key={p.id} product={p} />
+            {similar.slice(0, 4).map((p, i) => (
+              <Reveal key={p.id} delay={i * 100} className="h-full">
+                <Tilt className="h-full">
+                  <ProductCard product={p} />
+                </Tilt>
+              </Reveal>
             ))}
           </div>
         </Container>
       )}
     </section>
+    <ReviewsSection target={{ product_slug: product.slug }} initial={reviews} />
+    </>
   );
 }

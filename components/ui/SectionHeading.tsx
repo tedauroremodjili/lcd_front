@@ -1,3 +1,6 @@
+import Reveal from "@/components/ui/Reveal";
+import SplitText from "@/components/ui/SplitText";
+
 export default function SectionHeading({
   eyebrow,
   title,
@@ -12,7 +15,7 @@ export default function SectionHeading({
   light?: boolean;
 }) {
   return (
-    <div
+    <Reveal
       className={`max-w-2xl ${align === "center" ? "mx-auto text-center" : "text-left"}`}
     >
       {eyebrow && (
@@ -26,20 +29,24 @@ export default function SectionHeading({
       )}
       <h2
         className={`font-serif-display text-balance text-3xl font-bold sm:text-4xl ${
-          light ? "text-white" : "text-navy"
+          light ? "text-white" : "text-heading"
         }`}
       >
-        {title}
+        <SplitText text={title} />
       </h2>
+      <span
+        className={`heading-line ${align === "center" ? "mx-auto" : ""}`}
+        aria-hidden="true"
+      />
       {description && (
         <p
           className={`mt-4 text-balance text-base leading-relaxed ${
-            light ? "text-white/75" : "text-charcoal/70"
+            light ? "text-white/75" : "text-body/70"
           }`}
         >
           {description}
         </p>
       )}
-    </div>
+    </Reveal>
   );
 }
