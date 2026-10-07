@@ -30,7 +30,7 @@ export default async function DevisPage(props: PageProps<"/devis">) {
         breadcrumb={[{ label: "Accueil", href: "/" }, { label: "Devis" }]}
         image={banners.devis?.image ?? ""}
       />
-      <section className="bg-surface py-20 sm:py-24">
+      <section className="bg-tint py-20 sm:py-24">
         <Container className="grid gap-14 lg:grid-cols-[1.5fr_1fr]">
           <Reveal direction="left">
           <QuoteForm

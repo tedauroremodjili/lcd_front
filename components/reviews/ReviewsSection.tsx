@@ -65,7 +65,7 @@ export default function ReviewsSection({
     "w-full rounded-xl border border-subtle/15 bg-surface px-4 py-3 text-sm text-heading placeholder:text-body/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30";
 
   return (
-    <section className="bg-surface py-16 sm:py-20">
+    <section className="bg-tint py-16 sm:py-20">
       <Container className="grid gap-12 lg:grid-cols-[1fr_1fr]">
         <div>
           <h2 className="font-serif-display text-2xl font-bold text-heading sm:text-3xl">{title}</h2>

@@ -27,7 +27,7 @@ export default async function OrderPage(props: PageProps<"/commande">) {
         breadcrumb={[{ label: "Accueil", href: "/" }, { label: "Produits", href: "/produits" }, { label: "Commande" }]}
         image={banners.produits?.image ?? ""}
       />
-      <section className="bg-surface py-20 sm:py-24">
+      <section className="bg-tint py-20 sm:py-24">
         <Container className="max-w-3xl">
           {product ? (
             <OrderForm productId={product.id} productName={product.name} maxStock={product.stock_quantity} />

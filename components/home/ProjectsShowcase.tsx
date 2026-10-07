@@ -10,7 +10,7 @@ import type { Project } from "@/lib/types";
 export default async function ProjectsShowcase({ projects }: { projects: Project[] }) {
   const texts = await getTexts();
   return (
-    <section className="bg-surface py-20 sm:py-28">
+    <section className="bg-tint py-20 sm:py-28">
       <Container>
         <Reveal>
           <SectionHeading

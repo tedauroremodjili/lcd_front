@@ -41,7 +41,7 @@ export default async function Home() {
       <ProductsShowcase products={products} />
       <WhyChooseUs />
       <Testimonials testimonials={testimonials} />
-      <CtaSection image={settings.cta_image} />
+      <CtaSection />
       <Newsletter title={txt(texts, "newsletter.title")} text={txt(texts, "newsletter.text")} button={txt(texts, "newsletter.button")} />
     </>
   );

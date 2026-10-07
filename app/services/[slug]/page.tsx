@@ -57,7 +57,7 @@ export default async function ServiceDetailPage(
         image={service.image}
       />
 
-      <section className="bg-surface py-20 sm:py-24">
+      <section className="bg-tint py-20 sm:py-24">
         <Container className="grid gap-14 lg:grid-cols-[1.4fr_1fr]">
           <Reveal direction="left">
             <h2 className="font-serif-display text-2xl font-bold text-heading">
@@ -122,7 +122,7 @@ export default async function ServiceDetailPage(
       </section>
 
       {relatedProjects.length > 0 && (
-        <section className="bg-surface-alt py-20 sm:py-24">
+        <section className="bg-gold-tint py-20 sm:py-24">
           <Container>
             <SectionHeading
               eyebrow="Portfolio"
@@ -144,7 +144,7 @@ export default async function ServiceDetailPage(
 
       <ReviewsSection target={{ service_slug: service.slug }} initial={reviews} />
       <WhyChooseUs />
-      <CtaSection image={settings.cta_image} />
+      <CtaSection />
     </>
   );
 }

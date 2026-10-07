@@ -23,7 +23,7 @@ export default async function ArticlesPage() {
         breadcrumb={[{ label: "Accueil", href: "/" }, { label: "Actualités" }]}
         image={banners.actualites?.image ?? ""}
       />
-      <section className="bg-surface py-20 sm:py-24">
+      <section className="bg-tint py-20 sm:py-24">
         <Container>
           {articles.length === 0 ? (
             <p className="text-center text-sm text-body/60">

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { CompanySettings } from "@/lib/types";
-import { whatsappLink } from "@/lib/utils";
+import { safeUrl, whatsappLink } from "@/lib/utils";
 
 export function WhatsAppIcon({ className = "" }: { className?: string }) {
   return (
@@ -35,9 +35,12 @@ type Social = { key: string; label: string; href: string; icon: (cls: string) =>
 
 function getSocials(settings: CompanySettings): Social[] {
   const list: Social[] = [];
-  if (settings.facebook) list.push({ key: "facebook", label: "Facebook", href: settings.facebook, icon: (c) => <Facebook className={c} /> });
-  if (settings.instagram) list.push({ key: "instagram", label: "Instagram", href: settings.instagram, icon: (c) => <Instagram className={c} /> });
-  if (settings.tiktok) list.push({ key: "tiktok", label: "TikTok", href: settings.tiktok, icon: (c) => <TikTok className={c} /> });
+  const facebook = safeUrl(settings.facebook);
+  const instagram = safeUrl(settings.instagram);
+  const tiktok = safeUrl(settings.tiktok);
+  if (facebook) list.push({ key: "facebook", label: "Facebook", href: facebook, icon: (c) => <Facebook className={c} /> });
+  if (instagram) list.push({ key: "instagram", label: "Instagram", href: instagram, icon: (c) => <Instagram className={c} /> });
+  if (tiktok) list.push({ key: "tiktok", label: "TikTok", href: tiktok, icon: (c) => <TikTok className={c} /> });
   if (settings.whatsapp) {
     list.push({
       key: "whatsapp",

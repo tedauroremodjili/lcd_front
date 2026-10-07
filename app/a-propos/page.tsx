@@ -73,7 +73,7 @@ export default async function AboutPage() {
         image={banners["a-propos"]?.image ?? ""}
       />
 
-      <section className="bg-surface py-20 sm:py-24">
+      <section className="bg-tint py-20 sm:py-24">
         <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
           <Reveal direction="left" className="order-2 lg:order-1">
             <span className="mb-3 inline-block text-xs font-semibold uppercase tracking-[0.3em] text-gold-dark">
@@ -124,7 +124,7 @@ export default async function AboutPage() {
       </section>
 
       {(mission || vision) && (
-        <section className="bg-surface-alt py-20 sm:py-24">
+        <section className="bg-gold-tint py-20 sm:py-24">
           <Container className="grid gap-10 lg:grid-cols-2">
             {mission && (
               <Card title={txt(texts, "about.mission_title")} text={mission} direction="left" />
@@ -137,7 +137,7 @@ export default async function AboutPage() {
       )}
 
       {savoirFaire && (
-        <section className="bg-surface py-20 sm:py-24">
+        <section className="bg-tint py-20 sm:py-24">
           <Container>
             <SectionHeading eyebrow="Notre expertise" title={txt(texts, "about.savoir_faire_title")} />
             <p className="mx-auto mt-10 max-w-3xl text-center leading-relaxed text-body/70">{savoirFaire}</p>
@@ -146,7 +146,7 @@ export default async function AboutPage() {
       )}
 
       {values.length > 0 && (
-        <section className="bg-surface py-20 sm:py-24">
+        <section className="bg-tint py-20 sm:py-24">
           <Container>
             <SectionHeading eyebrow="Ce qui nous anime" title="Nos valeurs" />
             <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -166,7 +166,7 @@ export default async function AboutPage() {
         </section>
       )}
 
-      <section className="bg-surface-alt py-20 sm:py-24">
+      <section className="bg-gold-tint py-20 sm:py-24">
         <Container>
           <SectionHeading
             eyebrow={txt(texts, "about.team_eyebrow")}
@@ -191,7 +191,7 @@ export default async function AboutPage() {
         </Container>
       </section>
 
-      <CtaSection image={settings.cta_image} />
+      <CtaSection />
     </>
   );
 }

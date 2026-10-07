@@ -6,6 +6,23 @@ const assetUrl = new URL(process.env.NEXT_PUBLIC_ASSET_URL ?? "http://localhost:
 const apiOrigin = new URL(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api").origin;
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+  // Basic security headers on every page: no framing by other sites (clickjacking),
+  // no MIME sniffing, limited referrer, unused browser features turned off.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), payment=(), usb=()" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'; object-src 'none'; base-uri 'self'" },
+        ],
+      },
+    ];
+  },
   // Same-origin proxy to Laravel so devices other than the dev PC can reach the API.
   async rewrites() {
     return [

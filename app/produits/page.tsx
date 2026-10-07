@@ -26,7 +26,7 @@ export default async function ProductsPage() {
         breadcrumb={[{ label: "Accueil", href: "/" }, { label: "Produits" }]}
         image={banners.produits?.image ?? ""}
       />
-      <section className="bg-surface py-20 sm:py-24">
+      <section className="bg-tint py-20 sm:py-24">
         <Container>
           <ProductCatalog products={products} categories={categories} />
         </Container>

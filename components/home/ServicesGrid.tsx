@@ -11,7 +11,7 @@ import type { Service } from "@/lib/types";
 export default async function ServicesGrid({ services }: { services: Service[] }) {
   const texts = await getTexts();
   return (
-    <section className="bg-surface-alt py-20 sm:py-28">
+    <section className="bg-gold-tint py-20 sm:py-28">
       <Container>
         <SectionHeading
           eyebrow={txt(texts, "home.services_eyebrow")}

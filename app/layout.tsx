@@ -1,23 +1,20 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Poppins } from "next/font/google";
 import CursorFollower from "@/components/layout/CursorFollower";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import PageViewTracker from "@/components/layout/PageViewTracker";
 import ScrollProgress from "@/components/ui/ScrollProgress";
+import NoInspect from "@/components/ui/NoInspect";
 import ChatBot from "@/components/layout/ChatBot";
 import { getChatbotConfig, getServices, getSettings, getTexts, getWeather } from "@/lib/api";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+// Poppins everywhere on the site (texts and headings).
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -42,7 +39,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="fr"
       suppressHydrationWarning
-      className={`${inter.variable} ${playfair.variable} h-full antialiased`}
+      className={`${poppins.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-surface text-body">
         <script
@@ -56,6 +53,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <noscript>
           <style>{".reveal{opacity:1!important;transform:none!important;clip-path:none!important}.split-inner{transform:none!important}"}</style>
         </noscript>
+        <NoInspect />
         <ScrollProgress />
         <CursorFollower />
         <Header services={services} settings={settings} texts={texts} weather={weather} />

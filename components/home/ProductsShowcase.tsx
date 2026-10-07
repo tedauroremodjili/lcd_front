@@ -12,7 +12,7 @@ import type { Product } from "@/lib/types";
 export default async function ProductsShowcase({ products }: { products: Product[] }) {
   const texts = await getTexts();
   return (
-    <section className="bg-surface-alt py-20 sm:py-28">
+    <section className="bg-gold-tint py-20 sm:py-28">
       <Container>
         <SectionHeading
           eyebrow={txt(texts, "home.products_eyebrow")}

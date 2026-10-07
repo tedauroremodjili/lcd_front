@@ -18,7 +18,7 @@ export default async function Intro({
   const texts = await getTexts();
 
   return (
-    <section className="bg-surface py-20 sm:py-28">
+    <section className="bg-tint py-20 sm:py-28">
       <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
         <div className="relative">
           <Reveal

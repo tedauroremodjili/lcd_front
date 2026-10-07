@@ -27,7 +27,7 @@ export default async function ContactPage() {
         breadcrumb={[{ label: "Accueil", href: "/" }, { label: "Contact" }]}
         image={banners.contact?.image ?? ""}
       />
-      <section className="bg-surface py-20 sm:py-24">
+      <section className="bg-tint py-20 sm:py-24">
         <Container className="grid gap-14 lg:grid-cols-[1fr_1.3fr]">
           <Reveal direction="left">
             <h2 className="font-serif-display text-2xl font-bold text-heading">

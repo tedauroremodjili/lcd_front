@@ -54,7 +54,7 @@ export default async function ProjectDetailPage(
         image={project.image}
       />
 
-      <section className="bg-surface py-14 sm:py-20">
+      <section className="bg-tint py-14 sm:py-20">
       <Container>
         <div className="grid gap-14 lg:grid-cols-2">
           <Reveal direction="left">

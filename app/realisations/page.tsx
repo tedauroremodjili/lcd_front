@@ -23,7 +23,7 @@ export default async function RealisationsPage() {
         breadcrumb={[{ label: "Accueil", href: "/" }, { label: "Réalisations" }]}
         image={banners.realisations?.image ?? ""}
       />
-      <section className="bg-surface py-20 sm:py-24">
+      <section className="bg-tint py-20 sm:py-24">
         <Container>
           <ProjectFilters projects={projects} />
         </Container>

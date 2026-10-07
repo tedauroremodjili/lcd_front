@@ -15,7 +15,7 @@ export default function Marquee({ items }: { items: string[] }) {
 
   return (
     <section
-      className="marquee overflow-hidden bg-navy py-6 text-white/90 sm:py-8"
+      className="marquee overflow-hidden bg-gold py-6 text-navy sm:py-8"
       aria-label={items.join(", ")}
     >
       <div className="marquee-track">

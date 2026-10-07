@@ -26,7 +26,7 @@ export default function Newsletter({
   }
 
   return (
-    <section className="bg-surface py-16">
+    <section className="bg-tint py-16">
       <Container>
         <Reveal direction="zoom" className="flex flex-col items-center justify-between gap-8 rounded-2xl border border-subtle/10 bg-surface-alt p-8 sm:p-10 lg:flex-row">
           <div className="max-w-lg text-center lg:text-left">

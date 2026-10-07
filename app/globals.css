@@ -22,6 +22,10 @@
   --color-surface: #ffffff;
   --color-surface-alt: var(--color-offwhite);
   --color-subtle: var(--color-navy);
+
+  /* Coloured section backgrounds (never plain white). */
+  --color-tint: #e9eff7;
+  --color-gold-tint: #fbf1dc;
 }
 
 .dark {
@@ -33,6 +37,8 @@
   --color-surface: #101c30;
   --color-surface-alt: #0a1424;
   --color-subtle: #ffffff;
+  --color-tint: #0c1a2e;
+  --color-gold-tint: #1f1a0c;
 }
 
 @theme inline {
@@ -53,9 +59,11 @@
   --color-surface: var(--color-surface);
   --color-surface-alt: var(--color-surface-alt);
   --color-subtle: var(--color-subtle);
+  --color-tint: var(--color-tint);
+  --color-gold-tint: var(--color-gold-tint);
 
-  --font-sans: var(--font-inter);
-  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-poppins);
+  --font-serif: var(--font-poppins);
 }
 
 body {

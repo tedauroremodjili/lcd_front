@@ -15,13 +15,12 @@ export default async function WhyChooseUs() {
   const texts = await getTexts();
   const items = pairsOf(texts, "why.items");
   return (
-    <section className="bg-navy py-20 text-white sm:py-28">
+    <section className="bg-tint py-20 sm:py-28">
       <Container>
         <SectionHeading
           eyebrow={txt(texts, "why.eyebrow")}
           title={txt(texts, "why.title")}
           description={txt(texts, "why.description")}
-          light
         />
         <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((item, i) => (
@@ -29,15 +28,15 @@ export default async function WhyChooseUs() {
               key={item.title}
               delay={i * 110}
               direction="zoom"
-              className="group h-full rounded-2xl bg-white/5 p-7 transition-colors duration-300 hover:bg-white/10"
+              className="group h-full rounded-2xl border border-subtle/10 bg-surface p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(6,37,74,0.12)]"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gold/15 text-gold-light">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gold/15 text-gold-dark">
                 <svg width="24" height="24" viewBox="0 0 24 24">
                   {icons[i]}
                 </svg>
               </div>
-              <h3 className="mt-5 font-serif-display text-lg font-bold">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-white/70">
+              <h3 className="mt-5 font-serif-display text-lg font-bold text-heading">{item.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-body/70">
                 {item.description}
               </p>
             </Reveal>
